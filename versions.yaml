@@ -1,0 +1,82 @@
+versions:
+    # baseline version with no changes 
+    - 1.0.0:
+        MVS_S2__PER_LINE:       20
+        MVS_S2__BANDWIDTH:      50
+        MVS_S2__REPETITIONS:    256000 # 1000*16*16
+        
+        MVS_S3__PER_LINE:       50
+        MVS_S3__BANDWIDTH:      50
+        MVS_S3__REPETITIONS:    10000 # 1000*10
+        
+        MMS_S2__PER_LINE:       4
+        MMS_S2__BANDWIDTH:      8
+        MMS_S2__REPETITIONS:    1600 # 100*16
+        
+        MMS_S3__PER_LINE:       10
+        MMS_S3__BANDWIDTH:      20
+        MMS_S3__REPETITIONS:    16 # 100*16
+        
+    - 1.0.[1-15]
+    
+    # in test               MVS_S3
+    # per line elements     50 to 71
+    # pace                  slow (3 el per version)
+    # effect                increase CPU and MEM
+    - 1.1.0:
+        MVS_S3__PER_LINE: 50
+    - 1.1.[1-7]:
+        MVS_S3__PER_LINE: +=3
+    - 1.1.[8-15]
+    
+    # in test               MVS_S3
+    # per line elements     70 to 50
+    # pace                  rapid (20 el per version)
+    # effect                decrease CPU and MEM
+    - 1.2.0:
+        MVS_S3__PER_LINE: 50
+    - 1.2.[1-10]
+    
+    # in test               MVS_S3
+    # elements bandwidth    50 to 5454 (elements can be everywhere on the line since there is 8192 columns)
+    # pace                  slow (* 1.6 per version)
+    # effect                increase MEM
+    - 1.3.0:
+        MVS_S3__BANDWIDTH: 50
+    - 1.3.[1-10]:
+        MVS_S3__BANDWIDTH: x=1.6
+    - 1.3.[1-15]
+    
+    # in test               MVS_S3
+    # elements bandwidth    5454 to 50
+    # pace                  rapid (-1351 per commit)
+    # effect                decrease MEM
+    - 1.3.0:
+        MVS_S3__BANDWIDTH: 50
+    - 1.3.[1-10]:
+        MVS_S3__BANDWIDTH: x=1.6
+    - 1.3.[10-20]
+    - 1.3.[20-23]:
+        MVS_S3__BANDWIDTH: -=1351
+    - 1.3.[24-30]
+    
+    # in tests              MMS_S2, MMS_S3
+    # elements bandwidth    baseline to baseline*6
+    # pace                  fast (increase one baseline per version)
+    # effect                increase CPU and MEM
+    - 1.4.0:
+        MMS_S2__PER_LINE: 4
+        MMS_S3__PER_LINE: 10
+    - 1.4.[1-5]:
+        MMS_S2__PER_LINE: +=4
+        MMS_S3__PER_LINE: +=10
+    - 1.4.[6-15]
+    
+    # in tests              MMS_S2, MMS_S3
+    # elements bandwidth    baseline*6 to baseline
+    # pace                  rapid (-1351 per commit)
+    # effect                decrease CPU and MEM
+    - 1.5.[0-9]:
+        MMS_S2__PER_LINE: -=2
+        MMS_S3__PER_LINE: -=5
+    - 1.5.[10-15]
