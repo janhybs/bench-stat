@@ -550,22 +550,17 @@ void test_sparse_mat_mat(json &results, int rows=100, int cols=100, int per_line
 
 /**
  * Start benchmark, usage:
- * optional <output> file: will create json file output with results
- * optional <scale> float: scales repetition count for benchmark
- *                         default is 1, for example value 2 will run tests 
- *                         twice as many times, value 0.5 will experiments half
- *                         as many times
+ * <output> file: will create json file output with results
+ * <scale> int: which test to run
  */
 int main(int argc,  char* argv[]) {
     int i = 1;
+    int t = 0;
     string json_file        = argc >= (i+1) ? string(argv[i++]) : "result.json";
-    string version          = argc >= (i+1) ? string(argv[i++]) : "1.2.1";
-    int el_per_line_extra   = argc >= (i+1) ? std::stof(argv[i++]) : 0;
-    int line_spread_extra   = argc >= (i+1) ? std::stof(argv[i++]) : 0;
-
-    int pl = el_per_line_extra;
-    int sp = line_spread_extra;
-
+    string version          = argc >= (i+1) ? string(argv[i++]) : "1.0.0";
+    int test                = argc >= (i+1) ? std::stof(argv[i++]) : 0;
+    
+    
     srand(1234);
     
     printf_debug("running tests...         ");
@@ -581,58 +576,58 @@ int main(int argc,  char* argv[]) {
     // valgrind: LLd  miss rate  0.0%
     // valgrind: LL   miss rate  0.0%
     int sizes_l1[] = { 4, 8, 16, 32, 64, 128, 256, 512, 1 * KB, 2 * KB };
-    test_mem(results["mem_l1"], sizes_l1, ARR_SIZE, 32*2);
+    if(test == t++) test_mem(results["mem_l1"], sizes_l1, ARR_SIZE, 32*2);
     // 
     // // valgrind: D1   miss rate  9.5%
     // // valgrind: LLd  miss rate  0.0%
     // // valgrind: LL   miss rate  0.0%
     int sizes_l2[] = { 4 * KB, 8 * KB, 16 * KB, 32 * KB, 64 * KB, 128 * KB };
-    test_mem(results["mem_l2"], sizes_l2, ARR_SIZE, 32*2);
+    if(test == t++) test_mem(results["mem_l2"], sizes_l2, ARR_SIZE, 32*2);
     
     // valgrind: D1   miss rate 14.2%
     // valgrind: LLd  miss rate  5.7%
     // // valgrind: LL   miss rate  1.9%
     int sizes_l3[] = { 256 * KB, 512 * KB, 1 * MB, 2 * MB, 4 * MB };
-    test_mem(results["mem_l3"], sizes_l3, ARR_SIZE, 32*2);
+    if(test == t++) test_mem(results["mem_l3"], sizes_l3, ARR_SIZE, 32*2);
     // 
     // // valgrind: D1   miss rate 14.2%
     // // valgrind: LLd  miss rate 14.2%
     // // valgrind: LL   miss rate  4.9%
     int sizes_ll[] = { 8 * MB, 16 * MB, 32 * MB };
-    test_mem(results["mem_ll"], sizes_ll, ARR_SIZE, 32*2);
+    if(test == t++) test_mem(results["mem_ll"], sizes_ll, ARR_SIZE, 32*2);
     
     // valgrind: D1   miss rate  0.0%
     // valgrind: LLd  miss rate  0.0%
     // valgrind: LL   miss rate  0.0%
-    test_reg_simple(results["cpu_simple"]);
+    if(test == t++) test_reg_simple(results["cpu_simple"]);
     
     // valgrind: D1   miss rate  0.0%
     // valgrind: LLd  miss rate  0.0%
     // valgrind: LL   miss rate  0.0%
-    test_reg_hash  (results["cpu_hash"]);
+    if(test == t++) test_reg_hash  (results["cpu_hash"]);
     
     // valgrind: D1   miss rate  0.0%
     // valgrind: LLd  miss rate  0.0%
     // valgrind: LL   miss rate  0.0%
-    test_reg_md5   (results["cpu_md5"]);
+    if(test == t++) test_reg_md5   (results["cpu_md5"]);
     
     
-    mat_mul(results["mmn_s1"],  16, 8*8*8*8*8*8);
-    mat_mul(results["mmn_s2"],  64, 8*8*8*8);
-    mat_mul(results["mmn_s3"], 128, 8*8*8);
-    mat_mul(results["mmn_s4"], 256, 8*8);
+    if(test == t++) mat_mul(results["mmn_s1"],  16, 8*8*8*8*8*8);
+    if(test == t++) mat_mul(results["mmn_s2"],  64, 8*8*8*8);
+    if(test == t++) mat_mul(results["mmn_s3"], 128, 8*8*8);
+    if(test == t++) mat_mul(results["mmn_s4"], 256, 8*8);
     
-    //                                     rows    cols      per_line          band               reps
-    test_sparse_mat_vec(results["mvs_s1"], 32,     64,       20,               50,                1000*32*32);
-    test_sparse_mat_vec(results["mvs_s2"], 128,    1024,     MVS_S2__PER_LINE, MVS_S2__BANDWIDTH, MVS_S2__REPETITIONS);
-    test_sparse_mat_vec(results["mvs_s3"], 1024,   8192,     MVS_S3__PER_LINE, MVS_S3__BANDWIDTH, MVS_S3__REPETITIONS);
-    test_sparse_mat_vec(results["mvs_s4"], 8192,   8192*4,   50,               50,                1000*2);
+    //                                                     rows    cols      per_line          band               reps
+    if(test == t++) test_sparse_mat_vec(results["mvs_s1"], 32,     64,       20,               50,                1000*32*32);
+    if(test == t++) test_sparse_mat_vec(results["mvs_s2"], 128,    1024,     MVS_S2__PER_LINE, MVS_S2__BANDWIDTH, MVS_S2__REPETITIONS);
+    if(test == t++) test_sparse_mat_vec(results["mvs_s3"], 1024,   8192,     MVS_S3__PER_LINE, MVS_S3__BANDWIDTH, MVS_S3__REPETITIONS);
+    if(test == t++) test_sparse_mat_vec(results["mvs_s4"], 8192,   8192*4,   50,               50,                1000*2);
     
-    //                                     rows    cols      per_line          band               reps
-    test_sparse_mat_mat(results["mms_s1"], 8,      8,        2,                4,                 1000*32*4);
-    test_sparse_mat_mat(results["mms_s2"], 32,     32,       MMS_S2__PER_LINE, MMS_S2__BANDWIDTH, MMS_S2__REPETITIONS);
-    test_sparse_mat_mat(results["mms_s3"], 128,    128,      MMS_S3__PER_LINE, MMS_S3__BANDWIDTH, MMS_S3__REPETITIONS);
-    test_sparse_mat_mat(results["mms_s4"], 256,    256,      10,               20,                3);
+    //                                                     rows    cols      per_line          band               reps
+    if(test == t++) test_sparse_mat_mat(results["mms_s1"], 8,      8,        2,                4,                 1000*32*4);
+    if(test == t++) test_sparse_mat_mat(results["mms_s2"], 32,     32,       MMS_S2__PER_LINE, MMS_S2__BANDWIDTH, MMS_S2__REPETITIONS);
+    if(test == t++) test_sparse_mat_mat(results["mms_s3"], 128,    128,      MMS_S3__PER_LINE, MMS_S3__BANDWIDTH, MMS_S3__REPETITIONS);
+    if(test == t++) test_sparse_mat_mat(results["mms_s4"], 256,    256,      10,               20,                3);
     // ------------------------------------------------------------------------
     test_timer.stop();
     printf("--------------------------------------------------------------------\n");
@@ -644,11 +639,8 @@ int main(int argc,  char* argv[]) {
     cout << results.dump(true) << endl;
     cout << json_file << endl;
 
-    // if arg is set we redirect dump to file
-    if (!json_file.empty()) {
-        ofstream ofs (json_file);
-        ofs << results.dump(true) << endl;
-    }
+    ofstream ofs (json_file);
+    ofs << results.dump(true) << endl;
     
     return 0;
 }

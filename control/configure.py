@@ -3,12 +3,12 @@
 # author: Jan Hybs
 
 
-from os.path import join, realpath
+from os.path import join, realpath, dirname
 import re
 import datetime
 
-__dir__ = realpath(__file__)
-__root__ = realpath(join(__dir__, '../' * 2))
+__dir__ = realpath(dirname(__file__))
+__root__ = realpath(join(__dir__, '../'))
 __bench__ = realpath(join(__root__, 'benchmarks'))
 
 
@@ -56,13 +56,7 @@ def configure(template, variables=None):
     return template
 
 
-def new_version(variables=None, version=''):
+def new_version(variables=None, version='1.0.0'):
     src = open(main_hh_template, 'r').read()
     open(main_hh, 'w').write(configure(src, variables))
-
-    if version:
-        new_line = '{:6s} - {}\n'.format(version, datetime.datetime.utcnow())
-    else:
-        new_line = '{:6s} - {}\n'.format('', datetime.datetime.utcnow())
-
-    open(version_txt, 'a').write(new_line)
+    open(version_txt, 'w').write(version + '\n')

@@ -3,15 +3,15 @@
 # author: Jan Hybs
 
 
-from os.path import join, realpath
+from os.path import join, realpath, dirname
 import yaml
 import progressbar
 import time
 import sys
 import datetime
 
-__dir__ = realpath(__file__)
-__root__ = realpath(join(__dir__, '../' * 2))
+__dir__ = realpath(dirname(__file__))
+__root__ = realpath(join(__dir__, '../'))
 __bench__ = realpath(join(__root__, 'benchmarks'))
 
 
