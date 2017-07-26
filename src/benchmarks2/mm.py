@@ -40,16 +40,16 @@ class MM(IBenchmark):
             int(50 * self.pargs.bandwidth_factor),
         )
         self.matrix_a = matrix_a_coo.tocsr()
-
-        matrix_b_coo = generate_sparse_matrix(
-            self.rows,
-            int(30 * self.pargs.per_line_factor),
-            int(50 * self.pargs.bandwidth_factor),
-        )
-        self.matrix_b = matrix_b_coo.tocsr()
+        #
+        # matrix_b_coo = generate_sparse_matrix(
+        #     self.rows,
+        #     int(30 * self.pargs.per_line_factor),
+        #     int(50 * self.pargs.bandwidth_factor),
+        # )
+        # self.matrix_b = matrix_b_coo.tocsr()
 
     def test(self, *args, **kwargs):
-        self.result = self.matrix_a.dot(self.matrix_b)
+        self.result = self.matrix_a.dot(self.matrix_a)
 
     def breakdown(self):
         self.matrix_a = None
