@@ -12,7 +12,7 @@ from benchmarks2 import csr_matrix
 from benchmarks2 import sns, plt
 from benchmarks2 import generate_sparse_matrix
 from utils.easing import ease
-import gc
+
 
 class MM(IBenchmark):
 
@@ -26,7 +26,7 @@ class MM(IBenchmark):
             'Matrix matrix multiply', n)
 
         self.pargs = pargs
-        self.rows = int(round(ease(n, 10**1, 10**5, 'linear')))
+        self.rows = int(round(ease(n, 10**1, 10**5, 'easeInExpo')))
         self.cols = self.rows
         self.matrix_a = None      # type: csr_matrix
         self.matrix_b = None      # type: csr_matrix
