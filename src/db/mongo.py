@@ -16,14 +16,20 @@ class Mongo(object):
     """
 
     def __init__(self, auto_auth=True):
-        self.client = MongoClient('hybs.nti.tul.cz')
+        self.client = MongoClient('hybsntb.nti.tul.cz')
         self.db = self.client.get_database('bench')
-        self.bench = self.db.get_collection('bench')
-        self.nodes = self.db.get_collection('nodes')
-        self.flat = self.db.get_collection('flat_copy')
-        self.fs = self.db.get_collection('fs')
-        self.flow_long = self.db.get_collection('flow_long')
-        self.flow_long_log = self.db.get_collection('flow_long_log')
+        # self.bench = self.db.get_collection('bench')
+        # self.bench_new = self.db.get_collection('bench_new')
+        # self.nodes = self.db.get_collection('nodes')
+        # self.flat = self.db.get_collection('flat_copy')
+        # self.fs = self.db.get_collection('fs')
+        # self.flow_long = self.db.get_collection('flow_long')
+        # self.flow_long_log = self.db.get_collection('flow_long_log')
+
+        self.bench = self.db.get_collection('bench')        # testing mpstat and time to detect outliers
+        self.bench2 = self.db.get_collection('bench2')      # running 2 tests along side to see if they are affected in the same way
+        self.bench3 = self.db.get_collection('bench3')      # increasing size of a test
+
         if auto_auth and self.needs_auth():
             self.auth()
 

@@ -4,6 +4,7 @@
 
 import os
 import yaml
+import enum
 
 
 class Config(object):
@@ -48,6 +49,7 @@ class Config(object):
         for k in keys:
             r = r[k]
         return r
+
     def set(self, key, value):
         """
         :rtype: dict or list or string or int or bool
@@ -65,3 +67,26 @@ class Config(object):
         return yaml.dump(cfg, indent=4)
 
 cfg = Config()
+
+
+class Mode(enum.Enum):
+    LOCAL = 'local'
+    SCRIPT = 'script'
+    QSUB = 'qsub'
+
+    def __eq__(self, other):
+        return self.value == other
+
+    def __hash__(self):
+        return hash(self.value)
+
+    @classmethod
+    def parse(cls, value):
+        for o in cls:
+            if o.value == value:
+                return o
+        raise IndexError('No such enum value %s' % value)
+
+    @classmethod
+    def values(cls):
+        return [o.value for o in cls]

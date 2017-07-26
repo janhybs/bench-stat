@@ -4,6 +4,8 @@
 
 import threading
 import subprocess
+import math
+
 from pbs.pbspro import PBS
 
 
@@ -54,6 +56,9 @@ class Action(threading.Thread):
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False
 
+    def __len__(self):
+        return len(self.actions)
+
 
 class Seq(Action):
     def __init__(self, name):
@@ -68,15 +73,28 @@ class Seq(Action):
 class Par(Action):
     _formatter = _indent_generator('', '  ', '= ')
 
-    def __init__(self, name):
+    def __init__(self, name, limit=None):
         super(Par, self).__init__(name)
+        self.limit = limit
 
     def start(self):
-        for action in self.actions:
-            action.start()
+        if self.limit is None:
+            for action in self.actions:
+                action.start()
 
-        for action in self.actions:
-            action.join()
+            for action in self.actions:
+                action.join()
+        else:
+            total, l = len(self.actions), self.limit
+            chunks = [self.actions[x * l:(x + 1) * l] for x in range(0, math.ceil(total / l))]
+
+            for chunk in chunks:
+                for action in chunk:
+                    action.start()
+
+                for action in chunk:
+                    action.join()
+
         super(Par, self).start()
 
 
@@ -121,14 +139,18 @@ class BashAction(Action):
 
 
 class ScriptAction(Action):
-    def __init__(self, name, script):
+    def __init__(self, name, script, remove=False):
         super(ScriptAction, self).__init__(name)
         self.script = script
         self.returncode = None
+        self.remove = remove
 
     def run(self):
         process = subprocess.Popen(['bash', self.script])
         self.returncode = process.wait()
+        if self.remove:
+            import os
+            os.unlink(self.script)
 
     def __repr__(self):
         return '{self.__class__.__name__}.{self.action_name}({self.script})'.format(self=self)
