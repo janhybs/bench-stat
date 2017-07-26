@@ -18,7 +18,7 @@ class LC(IBenchmark):
             'bench-lc-%d' % n,
             'Linear combination', n)
 
-        self.size = int(round(ease(n, 10**1, 10**5, 'easyInExpo'))) # type: int
+        self.size = int(round(ease(n, 10**1, 10**5, 'easeInExpo'))) # type: int
         self.count = int(10 + pargs.lc_count)                       # type: int
         self.vectors = None                                         # type: np.ndarray
         self.coefs = None                                           # type: np.ndarray
