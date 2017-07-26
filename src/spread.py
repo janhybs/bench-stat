@@ -136,7 +136,6 @@ def execute_benchmark(t, use_qsub):
 
 
 if __name__ == '__main__':
-
     pargs = parse_args()
     mode = pargs.mode
     tests = TestGenerator.generate_tests(pargs)
@@ -145,7 +144,6 @@ if __name__ == '__main__':
         # print('Repetition %d of %d' % (r + 1, pargs.reps))
 
         for t in tests:
-
             if mode is Mode.LOCAL:
                 result.append(
                     execute_no_pbs(t)
@@ -162,11 +160,24 @@ if __name__ == '__main__':
     if mode is Mode.LOCAL:
         from matplotlib import pyplot as plt
         from pluck import pluck
+        import seaborn as sns
+        import numpy as np
+        import pandas as pd
 
         durations = pluck(result, 'duration')
         n = pluck(result, 'n')
-        plt.plot(n, durations)
+        rows = pluck(result, 'rows')
+        df = pd.DataFrame()
+        df['n'] = n
+        df['dur'] = durations
+        df['rows'] = rows
+
+        sns.regplot('rows', 'dur', df, order=2)
         plt.show()
+
+        plt.plot(rows, durations)
+        plt.show()
+
 
 # import collect_data
 # collect_command = '-m aaa.mpstat.txt -t aaa.time.json -r aaa.result.json'.format(**locals()).split()

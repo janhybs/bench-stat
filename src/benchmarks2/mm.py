@@ -22,7 +22,7 @@ class MM(IBenchmark):
         :type pargs: utils.parser.ParseResult
         """
         super(MM, self).__init__(
-            'bench-ma-%d' % n,
+            'bench-mm-%d' % n,
             'Matrix matrix multiply', n)
 
         self.pargs = pargs
@@ -30,6 +30,7 @@ class MM(IBenchmark):
         self.cols = self.rows
         self.matrix_a = None      # type: csr_matrix
         self.matrix_b = None      # type: csr_matrix
+        self.size = self.rows
 
     def setup(self):
 

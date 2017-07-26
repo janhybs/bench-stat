@@ -24,6 +24,7 @@ class MA(IBenchmark):
 
         self.dense_matrix = None
         self.reps = 1
+        self.size = self.rows
 
     def setup(self):
         self.dense_matrix = np.random.random(4 * 4)

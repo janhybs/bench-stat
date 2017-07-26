@@ -209,4 +209,4 @@ class IBenchmark(threading.Thread):
         self.json_result['duration'] = self.duration
         self.json_result['reps'] = self.reps
         self.json_result['n'] = self.n
-        self.json_result['size'] = self.rows
+        self.json_result['size'] = getattr(self, 'size', getattr(self, 'rows', self.n))
