@@ -33,6 +33,7 @@ class Mongo(object):
         self.bench3 = self.db.get_collection('bench3')      # running 2 tests along side to see if they are affected in the same way
         self.bench4 = self.db.get_collection('bench4')      # time resolution
         self.bench5 = self.db.get_collection('bench5')      # time resolution
+        self.bench6 = self.db.get_collection('bench6')      # time resolution
 
         if auto_auth and self.needs_auth():
             self.auth()

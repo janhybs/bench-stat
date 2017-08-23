@@ -107,7 +107,8 @@ def execute_no_pbs(t):
         db = Mongo()
 
     t.execute()
-    db.bench5.insert_one(collect_data.decorate_result(t.json_result))
+    result = collect_data.decorate_result(t.json_result)
+    print(db.bench6.insert_one(result))
     return t
 
 

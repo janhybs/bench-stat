@@ -87,6 +87,13 @@ def decorate_result(document):
     document['node'] = platform.node().split('.')[0].rstrip('1234567890')
     document['vnode'] = platform.node().split('.')[0]
     document['timestamp'] = time.time()
+
+    if 'name' in document:
+        name, prefix = str(document['name']), 'bench-'
+        name = name[len(prefix):] if name.startswith(prefix) else name
+
+        document['vname'] = name
+        document['name'] = name.split('-')[0]
     return document
 
 
