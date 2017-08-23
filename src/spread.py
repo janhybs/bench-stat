@@ -12,6 +12,7 @@ import sys
 import json
 from utils.config import Mode
 from importlib import util as importlib
+import collect_data
 
 collect_data_path = importlib.find_spec('collect_data').loader.path
 
@@ -37,14 +38,18 @@ collect_data_path = importlib.find_spec('collect_data').loader.path
 
 # module load python34-modules-gcc
 # qsub -l select=1:ncpus=1:mem=2gb -l walltime=1:59:00 -I
-
-
-
+# def order_cols(cols, *order):
+#     return list([c for c in order if c in cols]) + [c for c in cols if c not in order]
+#
+# c = ['datetime', 'duration', 'id', 'n', 'name', 'node', 'reps', 'size', 'time', 'timestamp', 'user', 'vnode']
+# c = order_cols(c, 'id', 'nnn', 'size')
+# print(c)
+# exit(0)
 
 script = '''
 #!/bin/bash
-#PBS -N bench-ma-{n}
-#PBS -l select=1:ncpus=1:mem=1gb
+#PBS -N bench-{tn}-{n}
+#PBS -l select=1:ncpus=1:mem=1gb:cl_luna=True
 #PBS -l walltime=01:59:59
 #PBS -j oe
 
@@ -53,23 +58,25 @@ script = '''
 ## P B S -l scratch=1gb
 if [ -n "$(type -t module)" ] && [ "$(type -t module)" = function ]; then
     echo "USING MODULES"
-    module purge
-    module load /software/modules/current/metabase
-    # module load cmake-2.8.12
-    module load cmake-3.6.1
-    module load gcc-4.9.2
-    module load boost-1.56-gcc
-    module load perl-5.20.1-gcc
-    #module load mpich-3.0.2-gcc
-    module load openmpi
-    module load python-3.4.1-gcc
     module load python34-modules-gcc
-
-    module unload gcc-4.8.1
-    module unload openmpi-1.8.2-gcc
-    module unload python-2.7.6-gcc
-
     module list
+    # module purge
+    # module load /software/modules/current/metabase
+    # # module load cmake-2.8.12
+    # module load cmake-3.6.1
+    # module load gcc-4.9.2
+    # module load boost-1.56-gcc
+    # module load perl-5.20.1-gcc
+    # #module load mpich-3.0.2-gcc
+    # module load openmpi
+    # module load python-3.4.1-gcc
+    # module load python34-modules-gcc
+    #
+    # module unload gcc-4.8.1
+    # module unload openmpi-1.8.2-gcc
+    # module unload python-2.7.6-gcc
+    #
+    # module list
 else
     echo "not using modules"
 fi
@@ -84,15 +91,24 @@ do
     /usr/bin/time -f '{{"real": %e, "user": %U, "sys": %S}}' -o {time_filename} {command} -o {result_filename}
     #sleep 2
     #kill -INT $MPSTAT_PID
-    {debug_comment}{sys.executable} {collect_data_path} --mpstat "{mpstat_filename}" --time "{time_filename}" --result "{result_filename}"
-    sleep 10
+    #{debug_comment}{sys.executable} {collect_data_path} --mpstat "{mpstat_filename}" --time "{time_filename}" --result "{result_filename}"
+    {sys.executable} {collect_data_path} --mpstat "{mpstat_filename}" --time "{time_filename}" --result "{result_filename}"
 done
 
 '''.strip()
 
+db = None
+
 
 def execute_no_pbs(t):
-    return t.execute()
+    global db
+    if db is None:
+        from db.mongo import Mongo
+        db = Mongo()
+
+    t.execute()
+    db.bench5.insert_one(collect_data.decorate_result(t.json_result))
+    return t
 
 
 def execute_no_qsub(t):
@@ -105,8 +121,8 @@ def execute_qsub(t):
 
 def execute_benchmark(t, use_qsub):
     import sys
-    import collect_data
     n = t.n
+    tn = t.name
     reps = pargs.reps
     rnd = uuid.uuid4().hex
     command = ' '.join(t.command_line)
@@ -131,52 +147,54 @@ def execute_benchmark(t, use_qsub):
     else:
         process = subprocess.Popen([shell_filename])
         print('%d=%d' % (process.pid, process.wait()))
-        collect_command = '-m {mpstat_filename} -t {time_filename} -r {result_filename}'.format(**locals()).split()
-        collect_data.main(collect_command)
+        # collect_command = '-m {mpstat_filename} -t {time_filename} -r {result_filename}'.format(**locals()).split()
+        # collect_data.main(collect_command)
 
 
 if __name__ == '__main__':
     pargs = parse_args()
     mode = pargs.mode
-    tests = TestGenerator.generate_tests(pargs)
-    result = list()
-    for r in range(1): # pargs.reps
-        # print('Repetition %d of %d' % (r + 1, pargs.reps))
 
-        for t in tests:
-            if mode is Mode.LOCAL:
-                result.append(
+    for i in range(pargs.reps if mode is Mode.LOCAL else 1):
+        tests = TestGenerator.generate_tests(pargs)
+        result = list()
+        for r in range(1): # pargs.reps
+            # print('Repetition %d of %d' % (r + 1, pargs.reps))
+
+            for t in tests:
+                if mode is Mode.LOCAL:
+                    # result.append(
                     execute_no_pbs(t)
-                )
-            elif mode is Mode.SCRIPT:
-                result.append(
-                    execute_no_qsub(t)
-                )
-            elif mode is Mode.QSUB:
-                result.append(
-                    execute_qsub(t)
-                )
+                    # )
+                elif mode is Mode.SCRIPT:
+                    result.append(
+                        execute_no_qsub(t)
+                    )
+                elif mode is Mode.QSUB:
+                    result.append(
+                        execute_qsub(t)
+                    )
 
-    if mode is Mode.LOCAL:
-        from matplotlib import pyplot as plt
-        from pluck import pluck
-        import seaborn as sns
-        import numpy as np
-        import pandas as pd
-
-        durations = pluck(result, 'duration')
-        n = pluck(result, 'n')
-        rows = pluck(result, 'rows')
-        df = pd.DataFrame()
-        df['n'] = n
-        df['dur'] = durations
-        df['rows'] = rows
-
-        sns.regplot('rows', 'dur', df, order=2)
-        plt.show()
-
-        plt.plot(rows, durations)
-        plt.show()
+    # if mode is Mode.LOCAL:
+    #     from matplotlib import pyplot as plt
+    #     from pluck import pluck
+    #     import seaborn as sns
+    #     import numpy as np
+    #     import pandas as pd
+    #
+    #     durations = pluck(result, 'duration')
+    #     n = pluck(result, 'n')
+    #     rows = pluck(result, 'rows')
+    #     df = pd.DataFrame()
+    #     df['n'] = n
+    #     df['dur'] = durations
+    #     df['rows'] = rows
+    #
+    #     sns.regplot('rows', 'dur', df, order=2)
+    #     plt.show()
+    #
+    #     plt.plot(rows, durations)
+    #     plt.show()
 
 
 # import collect_data

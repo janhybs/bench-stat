@@ -6,25 +6,6 @@
 import math
 
 
-def erange(start, stop, steps, ease='easeInExpo'):
-    import numpy as np
-    ease_func = getattr(Easing, ease)
-
-    b = start
-    c = stop - b
-    d = steps
-    values = [ease_func(t, b, c, d) for t in range(0, d + 1)]
-    values[0] = start
-    values[-1] = stop
-    return np.array(values)
-
-
-def ease(time, start=0, stop=100, ease='easeInExpo'):
-    if time <= 0: return start
-    if time >= 100: return stop
-    return getattr(Easing, ease)(time, start, stop-start, 100)
-
-
 # t is the current time (or position) of the tween.
 # b is the beginning value of the property.
 # c is the change between the beginning and destination value of the property.
@@ -146,3 +127,36 @@ class Easing(object):
             return -c/2 * (math.sqrt(1 - t*t) - 1) + b
         t -= 2
         return c/2 * (math.sqrt(1 - t*t) + 1) + b
+
+    @staticmethod
+    def easeInExpoConfig(t, b, c, d, base=2, power=10):
+        if t == 0:
+            return b
+        di = c * pow(base, -power)
+        return (c+di) * pow(base, power * (t / d - 1)) + b - di
+
+
+def erange(start, stop, steps, ease=Easing.easeInExpoConfig):
+    """
+    :type ease: object or str
+    """
+    import numpy as np
+    ease_func = getattr(Easing, ease) if type(ease) is str else ease
+
+    b = start
+    c = stop - b
+    d = steps
+    values = [ease_func(t, b, c, d) for t in range(0, d + 1)]
+    values[0] = start
+    values[-1] = stop
+    return np.array(values)
+
+
+def ease(time, start=0, stop=100, ease=Easing.easeInExpoConfig):
+    """
+    :type ease: object or str
+    """
+    if time <= 0: return start
+    if time >= 100: return stop
+    ease_f = getattr(Easing, ease) if type(ease) is str else ease
+    return ease_f(time, start, stop-start, 100)

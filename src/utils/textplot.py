@@ -132,7 +132,6 @@ def plot2(*y):
     else:
         charts = reshape(charts, rows=math.ceil(len(charts)/8), cols=8)
 
-
     for chart in charts:
         for i in range(samples+2):
             line = ''
@@ -143,5 +142,4 @@ def plot2(*y):
                 line = chart[i]
 
             lineutf = (line + '\n').encode('utf-8')
-            sys.stdout.buffer.write(lineutf)
             # print(line)

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # author: Jan Hybs
+
 import argparse
 import sys
 import os
@@ -140,7 +141,7 @@ def main(command=None):
     print(json.dumps(document, indent=4))
 
     db = Mongo()
-    print(db.bench3.insert_one(document).inserted_id)
+    print(db.bench5.insert_one(document).inserted_id)
 
 
 if __name__ == '__main__':

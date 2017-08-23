@@ -3,7 +3,6 @@
 # author:   Jan Hybs
 
 import subprocess
-from collections import namedtuple
 
 
 class ExecutionResult(object):

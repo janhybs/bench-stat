@@ -17,7 +17,7 @@ class MA(IBenchmark):
             'bench-ma-%d' % n,
             'Matrix assembly', n)
 
-        self.rows = int(round(ease(n, 10**1, 10**5, 'linear')))
+        self.rows = int(round(ease(n, 10**1, 10**5, 'easeInExpoConfig')))
         self.cols = self.rows
         self.bandwidth = int(50 + pargs.bandwidth_factor)
         self.per_line = 10

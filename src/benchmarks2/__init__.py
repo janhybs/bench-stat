@@ -51,8 +51,8 @@ def generate_sparse_matrix(n, pl, bw):
 # generate_sparse_matrix(10**5, 30, 50).tocsr()
 # print(time.time() - t)
 #
-# result = generate_sparse_matrix(100, 30, 50).toarray()
-#
+# result = generate_sparse_matrix(100, 20, 50).toarray()
+# #
 # # plt.matshow(result)
 # # # plt.matshow(result)
 # sns.heatmap(result)
