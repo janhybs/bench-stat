@@ -596,7 +596,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l2[] = { 4 * KB, 8 * KB, 16 * KB, 32 * KB, 64 * KB, 128 * KB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l2"], sizes_l2, ARR_SIZE, 32*2);
+      test_mem(detailed["mem_l2"], sizes_l2, ARR_SIZE, 40*2);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l2";
@@ -665,7 +665,7 @@ int main(int argc,  char* argv[]) {
     
     printf_debug("generating output...    \n");
     cout << results.dump(true) << endl;
-    // cout << json_file << endl;
+    cout << json_file << endl;
 
     ofstream ofs (json_file);
     ofs << results.dump(true) << endl;
