@@ -656,7 +656,7 @@ int main(int argc,  char* argv[]) {
     // if(test == t++) test_sparse_mat_mat(results["mms_s4"], 256,    256,      10,               20,                3);
     // ------------------------------------------------------------------------
     test_timer.stop();
-    results["results"]["duration"] = test_timer.seconds;
+    results["result"]["duration"] = test_timer.seconds;
     results["problem"]["application"] = "bench-stat";
     printf("--------------------------------------------------------------------\n");
     
