@@ -665,7 +665,7 @@ int main(int argc,  char* argv[]) {
     
     printf_debug("generating output...    \n");
     cout << results.dump(true) << endl;
-    cout << json_file << endl;
+    // cout << json_file << endl;
 
     ofstream ofs (json_file);
     ofs << results.dump(true) << endl;
