@@ -609,7 +609,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l3[] = { 256 * KB, 512 * KB, 1 * MB, 2 * MB, 4 * MB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l3"], sizes_l3, ARR_SIZE, 32*2);
+      test_mem(detailed["mem_l3"], sizes_l3, ARR_SIZE, 44*2);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l3";
