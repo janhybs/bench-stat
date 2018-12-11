@@ -583,7 +583,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l1[] = { 4, 8, 16, 32, 64, 128, 256, 512, 1 * KB, 2 * KB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l1"], sizes_l1, ARR_SIZE, 32*2);
+      test_mem(detailed["mem_l1"], sizes_l1, ARR_SIZE, 64*2);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l1";
