@@ -583,7 +583,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l1[] = { 4, 8, 16, 32, 64, 128, 256, 512, 1 * KB, 2 * KB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l1"], sizes_l1, ARR_SIZE, 85);
+      test_mem(detailed["mem_l1"], sizes_l1, ARR_SIZE, 90);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l1";
@@ -596,7 +596,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l2[] = { 4 * KB, 8 * KB, 16 * KB, 32 * KB, 64 * KB, 128 * KB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l2"], sizes_l2, ARR_SIZE, 85);
+      test_mem(detailed["mem_l2"], sizes_l2, ARR_SIZE, 90);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l2";
@@ -609,7 +609,7 @@ int main(int argc,  char* argv[]) {
     int sizes_l3[] = { 256 * KB, 512 * KB, 1 * MB, 2 * MB, 4 * MB };
     if(testAll || test == t++) {
       tt.start();
-      test_mem(detailed["mem_l3"], sizes_l3, ARR_SIZE, 85);
+      test_mem(detailed["mem_l3"], sizes_l3, ARR_SIZE, 90);
       tt.stop();
       tmp["duration"] = tt.seconds;
       tmp["name"] = "mem_l3";
